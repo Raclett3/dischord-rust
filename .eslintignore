@@ -1,0 +1,4 @@
+!*.js
+!*.ts
+built/
+node_modules/
