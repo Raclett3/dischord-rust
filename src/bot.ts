@@ -28,6 +28,6 @@ export async function ready(token: string) {
     await child.writeStdin(command);
     const result = await child.end();
 
-    await message.channel.send('', { files: [{ name: 'result.txt', attachment: result }] });
+    await message.channel.send('', { files: [{ name: 'result.wav', attachment: result }] });
   });
 }
