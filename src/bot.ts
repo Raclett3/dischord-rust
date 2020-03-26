@@ -3,7 +3,7 @@ import { resolve as resolvePath } from 'path';
 
 import { spawn } from './async-process';
 
-type MessageListener = (client: Discord.Client, message: Discord.Message) => any;
+type MessageListener = (client: Discord.Client, message: Discord.Message) => unknown;
 
 export async function login(token: string, listener: MessageListener) {
   const client = new Discord.Client();
