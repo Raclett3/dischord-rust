@@ -123,6 +123,17 @@ fn rest(state: &mut State) -> bool {
     true
 }
 
+fn tempo(state: &mut State) -> bool {
+    let current_char = take_char(state);
+    if current_char != 't' && current_char != 'T' {
+        return false;
+    }
+    state.position += 1;
+
+    state.context.tempo = unsigned_int(state, 120) as f64;
+    true
+}
+
 fn calc_frequency(octave: i32, note_char: char, accidental_ammount: f64) -> f64 {
     let note_position = match note_char {
                             'C' => 3,
@@ -143,7 +154,7 @@ fn score(state: &mut State) -> Option<char> {
             break None;
         }
 
-        let result = note(state) || rest(state);
+        let result = note(state) || rest(state) || tempo(state);
 
         if !result {
             break Some(take_char(state));
