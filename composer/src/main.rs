@@ -1,13 +1,13 @@
 mod waves;
 mod track;
+mod compose;
 
-use crate::track::Track;
-use crate::waves::pulse50;
-use std::io;
+use crate::compose::compose;
+use std::io::{self, Read};
 
 fn main() -> io::Result<()> {
-    let mut track = Track::new(44100);
-    track.render_wave(0.0, 1.0, 0.5, pulse50, 440.0);
-    track.print_as_riff()?;
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input)?;
+    compose(&input);
     Ok(())
 }
