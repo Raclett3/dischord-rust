@@ -5,6 +5,8 @@ struct Context {
     track: Track,
     position: f64,
     octave: i32,
+    tempo: f64,
+    default_length: u32,
 }
 
 impl Context {
@@ -13,6 +15,8 @@ impl Context {
             track: Track::new(44100),
             position: 0.0,
             octave: 0,
+            tempo: 120.0,
+            default_length: 8
         }
     }
 }
@@ -61,6 +65,24 @@ fn take_char(state: &mut State) -> char {
     }
 }
 
+fn unsigned_int(state: &mut State, default: u32) -> u32 {
+    let mut result: u32 = 0;
+    while !is_eof(state) {
+        let current_char = take_char(state);
+        if current_char >= '0' && current_char <= '9' {
+            result = result * 10 + (current_char as u8 - b'0') as u32;
+            state.position += 1;
+        } else {
+            break;
+        }
+    }
+    if result > 0 {
+        result
+    } else {
+        default
+    }
+}
+
 fn note(state: &mut State) -> bool {
     let current_char = take_char(state);
     let note = if current_char >= 'a' && current_char <= 'g' {
@@ -82,10 +104,11 @@ fn note(state: &mut State) -> bool {
         }
         state.position += 1;
     }
+    let duration = 240.0 / state.context.tempo / unsigned_int(state, state.context.default_length) as f64;
 
     let frequency = calc_frequency(state.context.octave, note, accidental);
-    state.context.track.render_wave(state.context.position, 0.5, 0.5, pulse50, frequency);
-    state.context.position += 0.5;
+    state.context.track.render_wave(state.context.position, duration, 0.5, pulse50, frequency);
+    state.context.position += duration;
     true
 }
 
@@ -96,7 +119,7 @@ fn rest(state: &mut State) -> bool {
     }
     state.position += 1;
 
-    state.context.position += 0.5;
+    state.context.position += 240.0 / state.context.tempo / unsigned_int(state, state.context.default_length) as f64;
     true
 }
 
