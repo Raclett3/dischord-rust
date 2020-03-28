@@ -18,9 +18,9 @@ export class AsyncChildProcess {
   }
 
   public async end() {
-    return await new Promise<Buffer>(resolve => {
-      this.stream.stdin.end(Buffer.alloc(0), () => {
-        resolve(this.readStream(this.stream.stdout));
+    return await new Promise<[Buffer, Buffer]>(resolve => {
+      this.stream.stdin.end(Buffer.alloc(0), async () => {
+        resolve([await this.readStream(this.stream.stdout), await this.readStream(this.stream.stderr)]);
       });
     });
   }

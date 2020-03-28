@@ -26,8 +26,12 @@ export async function ready(token: string) {
     const command = message.content.slice(prefix.length);
     const child = spawn(resolvePath(process.cwd(), 'composer/target/debug/dischord_rust'));
     await child.writeStdin(command);
-    const result = await child.end();
+    const [result, err] = await child.end();
 
-    await message.channel.send('', { files: [{ name: 'result.wav', attachment: result }] });
+    if (err.length) {
+      await message.channel.send(err.toString('utf-8'));
+    } else {
+      await message.channel.send('', { files: [{ name: 'result.wav', attachment: result }] });
+    }
   });
 }
