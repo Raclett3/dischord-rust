@@ -145,6 +145,19 @@ fn default_length(state: &mut State) -> bool {
     true
 }
 
+fn octave(state: &mut State) -> bool {
+    let current_char = take_char(state);
+    if current_char == '<' {
+        state.context.octave += 1;
+    } else if current_char == '>' {
+        state.context.octave -= 1;
+    } else {
+        return false;
+    }
+    state.position += 1;
+    true
+}
+
 fn calc_frequency(octave: i32, note_char: char, accidental_ammount: f64) -> f64 {
     let note_position = match note_char {
                             'C' => 3,
@@ -165,7 +178,7 @@ fn score(state: &mut State) -> Option<char> {
             break None;
         }
 
-        let result = note(state) || rest(state) || tempo(state) || default_length(state);
+        let result = note(state) || rest(state) || tempo(state) || default_length(state) || octave(state);
 
         if !result {
             break Some(take_char(state));
