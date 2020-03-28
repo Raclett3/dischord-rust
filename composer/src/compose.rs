@@ -96,7 +96,6 @@ fn rest(state: &mut State) -> bool {
     }
     state.position += 1;
 
-    state.context.track.render_wave(state.context.position, 0.5, 0.5, |_, _| 0.0, 0.0);
     state.context.position += 0.5;
     true
 }
