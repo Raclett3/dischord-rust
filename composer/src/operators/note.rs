@@ -1,6 +1,5 @@
 use crate::compose::State;
 use crate::parse::*;
-use crate::waves::pulse50;
 
 pub fn note(state: &mut State) -> bool {
     let current_char = take_char(state);
@@ -31,7 +30,7 @@ pub fn note(state: &mut State) -> bool {
         state.context.position,
         duration,
         state.context.volume,
-        pulse50,
+        state.context.tone,
         frequency,
     );
     state.context.position += duration;
@@ -94,7 +93,7 @@ pub fn chord(state: &mut State) -> bool {
             state.context.position,
             duration,
             state.context.volume,
-            pulse50,
+            state.context.tone,
             frequency,
         );
     }

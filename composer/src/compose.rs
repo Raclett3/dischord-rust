@@ -6,10 +6,12 @@ use crate::operators::{
     rest::rest,
     rewind::rewind,
     tempo::tempo,
+    tone::tone,
     volume::volume,
 };
 use crate::parse::*;
 use crate::track::Track;
+use crate::waves::{pulse50, Wave};
 
 pub struct Context {
     pub track: Track,
@@ -18,6 +20,7 @@ pub struct Context {
     pub tempo: f64,
     pub default_length: u32,
     pub volume: f64,
+    pub tone: Wave,
 }
 
 impl Context {
@@ -29,6 +32,7 @@ impl Context {
             tempo: 120.0,
             default_length: 8,
             volume: 0.5,
+            tone: pulse50,
         }
     }
 }
@@ -70,7 +74,8 @@ fn score(state: &mut State) -> Option<char> {
             || volume(state)
             || rewind(state)
             || repeat(state)
-            || chord(state);
+            || chord(state)
+            || tone(state);
 
         if !result {
             break Some(take_char(state));
