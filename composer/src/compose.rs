@@ -6,6 +6,7 @@ use crate::operators::{
     octave::octave,
     volume::volume,
     rewind::rewind,
+    repeat::repeat,
 };
 use crate::track::Track;
 use crate::parse::*;
@@ -32,10 +33,16 @@ impl Context {
     }
 }
 
+pub struct StackItem {
+    pub position: usize,
+    pub repeat_count: u32,
+}
+
 pub struct State<'state> {
     pub input: &'state str,
     pub position: usize,
     pub context: Context,
+    pub repeat_stack: Vec<StackItem>,
 }
 
 impl<'state> State<'state> {
@@ -44,6 +51,7 @@ impl<'state> State<'state> {
             input,
             position: 0,
             context: Context::new(),
+            repeat_stack: Vec::new(),
         }
     }
 }
@@ -54,7 +62,7 @@ fn score(state: &mut State) -> Option<char> {
             break None;
         }
 
-        let result = note(state) || rest(state) || tempo(state) || default_length(state) || octave(state) || volume(state) || rewind(state);
+        let result = note(state) || rest(state) || tempo(state) || default_length(state) || octave(state) || volume(state) || rewind(state) || repeat(state);
 
         if !result {
             break Some(take_char(state));

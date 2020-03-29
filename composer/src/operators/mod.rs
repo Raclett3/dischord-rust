@@ -5,3 +5,4 @@ pub mod rest;
 pub mod tempo;
 pub mod volume;
 pub mod rewind;
+pub mod repeat;
