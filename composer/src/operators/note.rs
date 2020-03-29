@@ -26,7 +26,7 @@ pub fn note(state: &mut State) -> bool {
     let duration = 240.0 / state.context.tempo / unsigned_int(state, state.context.default_length) as f64;
   
     let frequency = calc_frequency(state.context.octave, note, accidental);
-    state.context.track.render_wave(state.context.position, duration, 0.5, pulse50, frequency);
+    state.context.track.render_wave(state.context.position, duration, state.context.volume, pulse50, frequency);
     state.context.position += duration;
     true
 }

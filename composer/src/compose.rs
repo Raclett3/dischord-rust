@@ -4,6 +4,7 @@ use crate::operators::{
     tempo::tempo,
     default_length::default_length,
     octave::octave,
+    volume::volume,
 };
 use crate::track::Track;
 use crate::parse::*;
@@ -14,6 +15,7 @@ pub struct Context {
     pub octave: i32,
     pub tempo: f64,
     pub default_length: u32,
+    pub volume: f64,
 }
 
 impl Context {
@@ -23,7 +25,8 @@ impl Context {
             position: 0.0,
             octave: 0,
             tempo: 120.0,
-            default_length: 8
+            default_length: 8,
+            volume: 0.5,
         }
     }
 }
@@ -50,7 +53,7 @@ fn score(state: &mut State) -> Option<char> {
             break None;
         }
 
-        let result = note(state) || rest(state) || tempo(state) || default_length(state) || octave(state);
+        let result = note(state) || rest(state) || tempo(state) || default_length(state) || octave(state) || volume(state);
 
         if !result {
             break Some(take_char(state));
