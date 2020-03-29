@@ -1,8 +1,8 @@
-mod waves;
-mod track;
 mod compose;
 mod operators;
 mod parse;
+mod track;
+mod waves;
 
 use crate::compose::compose;
 use std::io::{self, Read};

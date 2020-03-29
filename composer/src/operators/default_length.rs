@@ -1,5 +1,5 @@
-use crate::parse::*;
 use crate::compose::State;
+use crate::parse::*;
 
 pub fn default_length(state: &mut State) -> bool {
     let current_char = take_char(state);

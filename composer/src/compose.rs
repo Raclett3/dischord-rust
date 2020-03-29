@@ -1,15 +1,15 @@
 use crate::operators::{
-    note::{note, chord},
-    rest::rest,
-    tempo::tempo,
     default_length::default_length,
+    note::{chord, note},
     octave::octave,
-    volume::volume,
-    rewind::rewind,
     repeat::repeat,
+    rest::rest,
+    rewind::rewind,
+    tempo::tempo,
+    volume::volume,
 };
-use crate::track::Track;
 use crate::parse::*;
+use crate::track::Track;
 
 pub struct Context {
     pub track: Track,
@@ -62,7 +62,15 @@ fn score(state: &mut State) -> Option<char> {
             break None;
         }
 
-        let result = note(state) || rest(state) || tempo(state) || default_length(state) || octave(state) || volume(state) || rewind(state) || repeat(state) || chord(state);
+        let result = note(state)
+            || rest(state)
+            || tempo(state)
+            || default_length(state)
+            || octave(state)
+            || volume(state)
+            || rewind(state)
+            || repeat(state)
+            || chord(state);
 
         if !result {
             break Some(take_char(state));

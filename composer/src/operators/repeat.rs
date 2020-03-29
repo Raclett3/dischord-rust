@@ -1,14 +1,14 @@
+use crate::compose::{StackItem, State};
 use crate::parse::*;
-use crate::compose::{State, StackItem};
 
 pub fn find_termination(state: &State) -> Option<usize> {
     let mut position = state.position + 1;
     let mut nest: usize = 1;
     while nest > 0 {
         if position >= state.input.len() {
-            return None
+            return None;
         }
-        
+
         let current_char = state.input.as_bytes()[position] as char;
         if current_char == '[' {
             nest += 1;
@@ -22,7 +22,7 @@ pub fn find_termination(state: &State) -> Option<usize> {
 
 pub fn repeat(state: &mut State) -> bool {
     let current_char = take_char(state);
-    if current_char == '['  {
+    if current_char == '[' {
         let found = find_termination(state);
         match found {
             Some(termination) => {
@@ -36,7 +36,7 @@ pub fn repeat(state: &mut State) -> bool {
                     });
                     state.position = start + 1;
                 }
-            },
+            }
             None => return false,
         }
     } else if current_char == ']' {
@@ -53,7 +53,7 @@ pub fn repeat(state: &mut State) -> bool {
                     state.position += 1;
                     unsigned_int(state, 0);
                 }
-            },
+            }
             None => return false,
         }
     } else {

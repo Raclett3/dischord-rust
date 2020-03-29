@@ -1,6 +1,6 @@
-use std::vec::Vec;
 use crate::waves::Wave;
 use std::io::{self, Write};
+use std::vec::Vec;
 
 pub struct Track {
     track: Vec<f64>,
@@ -38,7 +38,14 @@ impl Track {
         Ok(())
     }
 
-    pub fn render_wave(&mut self, start: f64, duration: f64, volume: f64, wave: Wave, frequency: f64) {
+    pub fn render_wave(
+        &mut self,
+        start: f64,
+        duration: f64,
+        volume: f64,
+        wave: Wave,
+        frequency: f64,
+    ) {
         let start_index = (start * self.sampling as f64) as usize;
         let length = (duration * self.sampling as f64) as usize;
         let end_index = start_index + length;
