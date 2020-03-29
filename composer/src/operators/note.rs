@@ -31,6 +31,64 @@ pub fn note(state: &mut State) -> bool {
     true
 }
 
+pub fn chord(state: &mut State) -> bool {
+    let current_char = take_char(state);
+    if current_char != '('  {
+        return false;
+    }
+    let start_position = state.position;
+    state.position += 1;
+
+    let mut octave = 0;
+    let mut frequency_list: Vec<f64> = Vec::new();
+
+    while !is_eof(state) {
+        let current_char = take_char(state);
+        let note = if current_char >= 'a' && current_char <= 'g' {
+            current_char as u8 - 0x20
+        } else if current_char >= 'A' && current_char <= 'G' {
+            current_char as u8
+        } else if current_char == '<' {
+            state.position += 1;
+            octave += 1;
+            continue;
+        } else if current_char == '>' {
+            state.position += 1;
+            octave -= 1;
+            continue;
+        } else if current_char == ')' {
+            state.position += 1;
+            break;
+        } else {
+            state.position = start_position;
+            return false;
+        } as char;
+
+        let mut accidental = 0f64;
+        while !is_eof(state) {
+            match take_char(state) {
+                '+' => {accidental += 1.0},
+                '#' => {accidental += 1.0},
+                '-' => {accidental += -1.0},
+                _ => break,
+            }
+            state.position += 1;
+        }
+      
+        let frequency = calc_frequency(state.context.octave + octave, note, accidental);
+        frequency_list.push(frequency);
+        state.position += 1;
+    }
+
+    let duration = 240.0 / state.context.tempo / unsigned_int(state, state.context.default_length) as f64;
+    for frequency in frequency_list {
+        state.context.track.render_wave(state.context.position, duration, state.context.volume, pulse50, frequency);
+    }
+    state.context.position += duration;
+
+    true
+}
+
 fn calc_frequency(octave: i32, note_char: char, accidental_ammount: f64) -> f64 {
     let note_position = match note_char {
                             'C' => 3,

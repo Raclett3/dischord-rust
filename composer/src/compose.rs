@@ -1,5 +1,5 @@
 use crate::operators::{
-    note::note,
+    note::{note, chord},
     rest::rest,
     tempo::tempo,
     default_length::default_length,
@@ -62,7 +62,7 @@ fn score(state: &mut State) -> Option<char> {
             break None;
         }
 
-        let result = note(state) || rest(state) || tempo(state) || default_length(state) || octave(state) || volume(state) || rewind(state) || repeat(state);
+        let result = note(state) || rest(state) || tempo(state) || default_length(state) || octave(state) || volume(state) || rewind(state) || repeat(state) || chord(state);
 
         if !result {
             break Some(take_char(state));
