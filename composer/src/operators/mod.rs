@@ -1,4 +1,5 @@
 pub mod default_length;
+pub mod envelope;
 pub mod note;
 pub mod octave;
 pub mod repeat;

@@ -8,6 +8,13 @@ pub struct Track {
     sampling: u32,
 }
 
+pub struct Envelope {
+    pub attack: f64,
+    pub decay: f64,
+    pub sustain: f64,
+    pub release: f64,
+}
+
 impl Track {
     pub fn new(sampling: u32) -> Self {
         Track {
@@ -45,14 +52,37 @@ impl Track {
         volume: f64,
         wave: Wave,
         frequency: f64,
+        envelope: &Envelope,
     ) {
         let start_index = (start * self.sampling as f64) as usize;
         let length = (duration * self.sampling as f64) as usize;
-        let end_index = start_index + length;
+
+        let attack_length = (envelope.attack * self.sampling as f64) as usize;
+        let decay_length = (envelope.decay * self.sampling as f64) as usize;
+        let release_length = (envelope.release * self.sampling as f64) as usize;
+        let release_origin = if length <= attack_length {
+            length as f64 / attack_length as f64
+        } else if length <= attack_length + decay_length {
+            1.0 - (1.0 - envelope.sustain) * (length - attack_length) as f64 / decay_length as f64
+        } else {
+            envelope.sustain
+        };
+
+        let end_index = start_index + length + release_length;
         self.fill_zero_until(end_index);
-        for i in 0..length {
+
+        for i in 0..(length + release_length) {
+            let envelope_volume = if i >= length {
+                release_origin * (length + release_length - i) as f64 / release_length as f64
+            } else if i < attack_length {
+                i as f64 / attack_length as f64
+            } else if i < attack_length + decay_length {
+                1.0 - (1.0 - envelope.sustain) * (i - attack_length) as f64 / decay_length as f64
+            } else {
+                envelope.sustain
+            };
             let position = i as f64 / self.sampling as f64;
-            let value = wave(frequency, position) * volume;
+            let value = wave(frequency, position) * volume * envelope_volume;
             self.add_value(start_index + i, value);
         }
     }

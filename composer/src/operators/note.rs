@@ -129,5 +129,6 @@ fn render_note(state: &mut State, frequency: f64, duration: f64, volume: f64) {
         state.context.volume * volume,
         state.context.tone,
         frequency,
+        &state.context.envelope,
     );
 }
