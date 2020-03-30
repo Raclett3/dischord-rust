@@ -1,4 +1,5 @@
 use std::f64::consts::PI;
+use std::i32;
 
 pub type Wave = fn(f64, f64) -> f64;
 
@@ -41,6 +42,28 @@ pub fn saw(frequency: f64, position: f64) -> f64 {
 
 pub fn sine(frequency: f64, position: f64) -> f64 {
     (position * frequency * PI * 2.0).sin()
+}
+
+static mut RAND: i32 = 1;
+
+fn next() -> i32 {
+    let a: i32 = 48271;
+    let m: i32 = 2_147_483_647;
+    unsafe {
+        let hi: i32 = RAND / (m / a);
+        let lo: i32 = RAND % (m / a);
+        let test = a * lo - (m % a) * hi;
+        RAND = if test > 0 {
+            test
+        } else {
+            test + m
+        };
+        RAND
+    }
+}
+
+pub fn noise(_: f64, _: f64) -> f64 {
+    next() as f64 / i32::MAX as f64
 }
 
 pub fn better_pulse(frequency: f64, position: f64) -> f64 {
