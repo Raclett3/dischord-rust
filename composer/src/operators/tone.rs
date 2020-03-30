@@ -2,7 +2,7 @@ use crate::compose::State;
 use crate::parse::*;
 use crate::waves::*;
 
-static TONES: [Wave; 3] = [pulse50, pulse25, pulse125];
+static TONES: [Wave; 7] = [pulse50, pulse25, pulse125, triangle, saw, sine, better_pulse];
 
 pub fn tone(state: &mut State) -> bool {
     let current_char = take_char(state);
