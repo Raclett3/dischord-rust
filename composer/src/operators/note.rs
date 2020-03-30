@@ -26,13 +26,16 @@ pub fn note(state: &mut State) -> bool {
         240.0 / state.context.tempo / unsigned_int(state, state.context.default_length) as f64;
 
     let frequency = calc_frequency(state.context.octave, note, accidental);
-    state.context.track.render_wave(
-        state.context.position,
-        duration,
-        state.context.volume,
-        state.context.tone,
-        frequency,
-    );
+    let unison_count = state.context.unison_count;
+    let detune = state.context.unison_detune;
+    for i in 0..unison_count {
+        let multiplier = if unison_count == 1 {
+            1.0
+        } else {
+            detune.powf(-1.0 + (i as f64 / (unison_count - 1) as f64) * 2.0)
+        };
+        render_note(state, frequency * multiplier, duration, 1.0 / unison_count as f64);
+    }
     state.context.position += duration;
     true
 }
@@ -89,13 +92,16 @@ pub fn chord(state: &mut State) -> bool {
     let duration =
         240.0 / state.context.tempo / unsigned_int(state, state.context.default_length) as f64;
     for frequency in frequency_list {
-        state.context.track.render_wave(
-            state.context.position,
-            duration,
-            state.context.volume,
-            state.context.tone,
-            frequency,
-        );
+        let unison_count = state.context.unison_count;
+        let detune = state.context.unison_detune;
+        for i in 0..unison_count {
+            let multiplier = if unison_count == 1 {
+                1.0
+            } else {
+                detune.powf(-1.0 + (i as f64 / (unison_count - 1) as f64) * 2.0)
+            };
+            render_note(state, frequency * multiplier, duration, 1.0 / unison_count as f64);
+        }
     }
     state.context.position += duration;
 
@@ -114,4 +120,14 @@ fn calc_frequency(octave: i32, note_char: char, accidental_ammount: f64) -> f64 
         _ => 0,
     } as f64;
     220.0 * 2f64.powf((note_position + accidental_ammount + 12.0 * octave as f64) / 12.0)
+}
+
+fn render_note(state: &mut State, frequency: f64, duration: f64, volume: f64) {
+    state.context.track.render_wave(
+        state.context.position,
+        duration,
+        state.context.volume * volume,
+        state.context.tone,
+        frequency,
+    );
 }
