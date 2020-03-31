@@ -2,14 +2,12 @@ use crate::compose::State;
 use crate::parse::*;
 
 pub fn octave(state: &mut State) -> bool {
-    let current_char = take_char(state);
-    if current_char == '<' {
+    if expect_char(state, '<') {
         state.context.octave += 1;
-    } else if current_char == '>' {
+    } else if expect_char(state, '>') {
         state.context.octave -= 1;
     } else {
         return false;
     }
-    state.position += 1;
     true
 }

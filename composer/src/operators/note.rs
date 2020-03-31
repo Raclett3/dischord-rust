@@ -41,12 +41,10 @@ pub fn note(state: &mut State) -> bool {
 }
 
 pub fn chord(state: &mut State) -> bool {
-    let current_char = take_char(state);
-    if current_char != '(' {
+    let start_position = state.position;
+    if !expect_char(state, '(') {
         return false;
     }
-    let start_position = state.position;
-    state.position += 1;
 
     let mut octave = 0;
     let mut frequency_list: Vec<f64> = Vec::new();
@@ -57,16 +55,13 @@ pub fn chord(state: &mut State) -> bool {
             current_char as u8 - 0x20
         } else if current_char >= 'A' && current_char <= 'G' {
             current_char as u8
-        } else if current_char == '<' {
-            state.position += 1;
+        } else if expect_char(state, '<') {
             octave += 1;
             continue;
-        } else if current_char == '>' {
-            state.position += 1;
+        } else if expect_char(state, '>') {
             octave -= 1;
             continue;
-        } else if current_char == ')' {
-            state.position += 1;
+        } else if expect_char(state, ')') {
             break;
         } else {
             state.position = start_position;

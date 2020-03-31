@@ -3,11 +3,9 @@ use crate::parse::*;
 
 pub fn envelope(state: &mut State) -> bool {
     let initial_position = state.position;
-    let current_char = take_char(state);
-    if current_char != 'n' && current_char != 'N' {
+    if !expect_char(state, 'n') && !expect_char(state, 'N') {
         return false;
     }
-    state.position += 1;
 
     let mut envelope = [0.0, 0.0, 0.0, 0.0];
 

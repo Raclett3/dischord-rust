@@ -2,14 +2,12 @@ use crate::compose::State;
 use crate::parse::*;
 
 pub fn rewind(state: &mut State) -> bool {
-    let current_char = take_char(state);
-    if current_char == ';' {
+    if expect_char(state, ';') {
         state.context.position = 0.0;
         state.context.octave = 0;
         state.context.volume = 0.5;
     } else {
         return false;
     }
-    state.position += 1;
     true
 }

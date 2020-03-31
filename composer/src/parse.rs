@@ -28,6 +28,15 @@ pub fn take_char(state: &mut State) -> char {
     }
 }
 
+pub fn expect_char(state: &mut State, expected: char) -> bool {
+    let actual = take_char(state);
+    if actual != expected {
+        return false;
+    }
+    state.position += 1;
+    true
+}
+
 pub fn unsigned_int(state: &mut State, default: u32) -> u32 {
     let mut result: u32 = 0;
     while !is_eof(state) {
