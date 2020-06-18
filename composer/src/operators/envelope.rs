@@ -1,7 +1,7 @@
 use crate::compose::State;
 
 pub fn envelope(state: &mut State) -> bool {
-    let initial_position = state.position;
+    state.transaction();
     if !state.expect_char('n') && !state.expect_char('N') {
         return false;
     }
@@ -18,7 +18,7 @@ pub fn envelope(state: &mut State) -> bool {
 
         let current_char = state.take_char();
         if current_char != ',' {
-            state.position = initial_position;
+            state.rollback();
             return false;
         }
         state.position += 1;

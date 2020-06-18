@@ -1,14 +1,14 @@
 use crate::compose::State;
 
 pub fn unison(state: &mut State) -> bool {
-    let initial_position = state.position;
+    state.transaction();
     if !state.expect_char('u') && !state.expect_char('U') {
         return false;
     }
 
     let unison_count = state.unsigned_int(1);
     if !state.expect_char(',') {
-        state.position = initial_position;
+        state.rollback();
         return false;
     }
     let detune = 1.0 + (state.unsigned_int(0) as i64 - 100) as f64 / 2000.0;

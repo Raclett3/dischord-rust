@@ -57,6 +57,7 @@ pub struct StackItem {
 pub struct State<'a> {
     pub input: &'a str,
     pub position: usize,
+    pub transaction_begin: Option<usize>,
     pub context: Context,
     pub repeat_stack: Vec<StackItem>,
 }
@@ -66,9 +67,18 @@ impl<'a> State<'a> {
         State {
             input,
             position: 0,
+            transaction_begin: None,
             context: Context::new(),
             repeat_stack: Vec::new(),
         }
+    }
+
+    pub fn transaction(&mut self) {
+        self.transaction_begin = Some(self.position);
+    }
+
+    pub fn rollback(&mut self) {
+        self.position = self.transaction_begin.unwrap_or(self.position);
     }
 
     pub fn skip_spaces(&mut self) {

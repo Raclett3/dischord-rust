@@ -40,7 +40,7 @@ pub fn note(state: &mut State) -> bool {
 }
 
 pub fn chord(state: &mut State) -> bool {
-    let start_position = state.position;
+    state.transaction();
     if !state.expect_char('(') {
         return false;
     }
@@ -63,7 +63,7 @@ pub fn chord(state: &mut State) -> bool {
         } else if state.expect_char(')') {
             break;
         } else {
-            state.position = start_position;
+            state.rollback();
             return false;
         } as char;
 
