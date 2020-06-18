@@ -5,6 +5,6 @@ pub fn volume(state: &mut State) -> bool {
         return false;
     }
 
-    state.context.volume = state.unsigned_int(100) as f64 / 100.0 * 0.5;
+    state.context.volume = state.unsigned_int(100) as f64 / 200.0 * 0.5;
     true
 }
