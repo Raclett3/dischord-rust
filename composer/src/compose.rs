@@ -55,15 +55,15 @@ pub struct StackItem {
     pub repeat_count: u32,
 }
 
-pub struct State<'state> {
-    pub input: &'state str,
+pub struct State<'a> {
+    pub input: &'a str,
     pub position: usize,
     pub context: Context,
     pub repeat_stack: Vec<StackItem>,
 }
 
-impl<'state> State<'state> {
-    pub fn new(input: &'state str) -> Self {
+impl<'a> State<'a> {
+    pub fn new(input: &'a str) -> Self {
         State {
             input,
             position: 0,
