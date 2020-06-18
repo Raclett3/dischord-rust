@@ -1,23 +1,22 @@
 use crate::compose::State;
-use crate::parse::*;
 
 pub fn envelope(state: &mut State) -> bool {
     let initial_position = state.position;
-    if !expect_char(state, 'n') && !expect_char(state, 'N') {
+    if !state.expect_char('n') && !state.expect_char('N') {
         return false;
     }
 
     let mut envelope = [0.0, 0.0, 0.0, 0.0];
 
     for i in 0..=3 {
-        let value = unsigned_int(state, 0) as f64 / 100.0;
+        let value = state.unsigned_int(0) as f64 / 100.0;
         envelope[i] = value;
 
         if i == 3 {
             break;
         }
 
-        let current_char = take_char(state);
+        let current_char = state.take_char();
         if current_char != ',' {
             state.position = initial_position;
             return false;

@@ -1,8 +1,7 @@
 use crate::compose::State;
-use crate::parse::*;
 
 pub fn rewind(state: &mut State) -> bool {
-    if expect_char(state, ';') {
+    if state.expect_char(';') {
         state.context.position = 0.0;
         state.context.octave = 0;
         state.context.volume = 0.5;

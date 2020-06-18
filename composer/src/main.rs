@@ -1,6 +1,5 @@
 mod compose;
 mod operators;
-mod parse;
 mod track;
 mod waves;
 

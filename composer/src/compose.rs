@@ -11,7 +11,6 @@ use crate::operators::{
     unison::unison,
     volume::volume,
 };
-use crate::parse::*;
 use crate::track::{Track, Envelope};
 use crate::waves::{pulse50, Wave};
 
@@ -71,11 +70,66 @@ impl<'a> State<'a> {
             repeat_stack: Vec::new(),
         }
     }
+
+    pub fn skip_spaces(&mut self) {
+        loop {
+            if self.position >= self.input.len() {
+                break;
+            }
+            let current_char = self.input.as_bytes()[self.position] as char;
+            if current_char == ' ' || current_char == '\n' || current_char == '\r' {
+                self.position += 1;
+            } else {
+                break;
+            }
+        }
+    }
+    
+    pub fn is_eof(&mut self) -> bool {
+        self.skip_spaces();
+        self.position >= self.input.len()
+    }
+    
+    pub fn take_char(&mut self) -> char {
+        self.skip_spaces();
+        if self.position < self.input.len() {
+            self.input.as_bytes()[self.position] as char
+        } else {
+            '\0'
+        }
+    }
+    
+    pub fn expect_char(&mut self, expected: char) -> bool {
+        let actual = self.take_char();
+        if actual != expected {
+            return false;
+        }
+        self.position += 1;
+        true
+    }
+    
+    pub fn unsigned_int(&mut self, default: u32) -> u32 {
+        let mut result: u32 = 0;
+        while !self.is_eof() {
+            let current_char = self.take_char();
+            if current_char >= '0' && current_char <= '9' {
+                result = result * 10 + (current_char as u8 - b'0') as u32;
+                self.position += 1;
+            } else {
+                break;
+            }
+        }
+        if result > 0 {
+            result
+        } else {
+            default
+        }
+    }
 }
 
 fn score(state: &mut State) -> Option<char> {
     loop {
-        if is_eof(state) {
+        if state.is_eof() {
             break None;
         }
 
@@ -93,7 +147,7 @@ fn score(state: &mut State) -> Option<char> {
             || envelope(state);
 
         if !result {
-            break Some(take_char(state));
+            break Some(state.take_char());
         }
     }
 }

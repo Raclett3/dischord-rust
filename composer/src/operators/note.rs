@@ -1,8 +1,7 @@
 use crate::compose::State;
-use crate::parse::*;
 
 pub fn note(state: &mut State) -> bool {
-    let current_char = take_char(state);
+    let current_char = state.take_char();
     let note = if current_char >= 'a' && current_char <= 'g' {
         current_char as u8 - 0x20
     } else if current_char >= 'A' && current_char <= 'G' {
@@ -13,8 +12,8 @@ pub fn note(state: &mut State) -> bool {
     state.position += 1;
 
     let mut accidental = 0.0;
-    while !is_eof(state) {
-        match take_char(state) {
+    while !state.is_eof() {
+        match state.take_char() {
             '+' => accidental += 1.0,
             '#' => accidental += 1.0,
             '-' => accidental += -1.0,
@@ -23,7 +22,7 @@ pub fn note(state: &mut State) -> bool {
         state.position += 1;
     }
     let duration =
-        240.0 / state.context.tempo / unsigned_int(state, state.context.default_length) as f64;
+        240.0 / state.context.tempo / state.unsigned_int(state.context.default_length) as f64;
 
     let frequency = calc_frequency(state.context.octave, note, accidental);
     let unison_count = state.context.unison_count;
@@ -42,26 +41,26 @@ pub fn note(state: &mut State) -> bool {
 
 pub fn chord(state: &mut State) -> bool {
     let start_position = state.position;
-    if !expect_char(state, '(') {
+    if !state.expect_char('(') {
         return false;
     }
 
     let mut octave = 0;
     let mut frequency_list: Vec<f64> = Vec::new();
 
-    while !is_eof(state) {
-        let current_char = take_char(state);
+    while !state.is_eof() {
+        let current_char = state.take_char();
         let note = if current_char >= 'a' && current_char <= 'g' {
             current_char as u8 - 0x20
         } else if current_char >= 'A' && current_char <= 'G' {
             current_char as u8
-        } else if expect_char(state, '<') {
+        } else if state.expect_char('<') {
             octave += 1;
             continue;
-        } else if expect_char(state, '>') {
+        } else if state.expect_char('>') {
             octave -= 1;
             continue;
-        } else if expect_char(state, ')') {
+        } else if state.expect_char(')') {
             break;
         } else {
             state.position = start_position;
@@ -69,8 +68,8 @@ pub fn chord(state: &mut State) -> bool {
         } as char;
 
         let mut accidental = 0f64;
-        while !is_eof(state) {
-            match take_char(state) {
+        while !state.is_eof() {
+            match state.take_char() {
                 '+' => accidental += 1.0,
                 '#' => accidental += 1.0,
                 '-' => accidental += -1.0,
@@ -85,7 +84,7 @@ pub fn chord(state: &mut State) -> bool {
     }
 
     let duration =
-        240.0 / state.context.tempo / unsigned_int(state, state.context.default_length) as f64;
+        240.0 / state.context.tempo / state.unsigned_int(state.context.default_length) as f64;
     for frequency in frequency_list {
         let unison_count = state.context.unison_count;
         let detune = state.context.unison_detune;

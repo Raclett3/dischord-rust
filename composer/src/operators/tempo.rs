@@ -1,11 +1,10 @@
 use crate::compose::State;
-use crate::parse::*;
 
 pub fn tempo(state: &mut State) -> bool {
-    if !expect_char(state, 't') && !expect_char(state, 'T') {
+    if !state.expect_char('t') && !state.expect_char('T') {
         return false;
     }
 
-    state.context.tempo = unsigned_int(state, 120) as f64;
+    state.context.tempo = state.unsigned_int(120) as f64;
     true
 }
