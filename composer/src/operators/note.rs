@@ -22,7 +22,7 @@ pub fn note(state: &mut State) -> bool {
         state.position += 1;
     }
 
-    let duration = take_note_duration(state);
+    let duration = state.take_note_duration();
     let frequency = calc_frequency(state.context.octave, note, accidental);
     let unison_count = state.context.unison_count;
     let detune = state.context.unison_detune;
@@ -82,7 +82,7 @@ pub fn chord(state: &mut State) -> bool {
         state.position += 1;
     }
 
-    let duration = take_note_duration(state);
+    let duration = state.take_note_duration();
     for frequency in frequency_list {
         let unison_count = state.context.unison_count;
         let detune = state.context.unison_detune;
@@ -98,31 +98,6 @@ pub fn chord(state: &mut State) -> bool {
     state.context.position += duration;
 
     true
-}
-
-fn take_note_duration(state: &mut State) -> f64 {
-    fn calc_duration(tempo: f64, nth_semibreve: u32) -> f64 {
-        240.0 / tempo / nth_semibreve as f64
-    };
-
-    let mut sum = 0.0;
-    loop {
-        let next = state.unsigned_int(state.context.default_length);
-
-        let mut dotted = 1.0;
-        loop {
-            if !state.expect_char('.') {
-                break;
-            }
-            dotted = (dotted + 2.0) / 2.0;
-        };
-
-        sum += calc_duration(state.context.tempo, next) * dotted;
-
-        if !state.expect_char('&') {
-            break sum;
-        }
-    }
 }
 
 fn calc_frequency(octave: i32, note_char: char, accidental_ammount: f64) -> f64 {

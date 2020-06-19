@@ -5,7 +5,6 @@ pub fn rest(state: &mut State) -> bool {
         return false;
     }
 
-    state.context.position +=
-        240.0 / state.context.tempo / state.unsigned_int(state.context.default_length) as f64;
+    state.context.position += state.take_note_duration();
     true
 }

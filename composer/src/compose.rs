@@ -135,6 +135,31 @@ impl<'a> State<'a> {
             default
         }
     }
+
+    pub fn take_note_duration(&mut self) -> f64 {
+        fn calc_duration(tempo: f64, nth_semibreve: u32) -> f64 {
+            240.0 / tempo / nth_semibreve as f64
+        };
+    
+        let mut sum = 0.0;
+        loop {
+            let next = self.unsigned_int(self.context.default_length);
+    
+            let mut dotted = 1.0;
+            loop {
+                if !self.expect_char('.') {
+                    break;
+                }
+                dotted = (dotted + 2.0) / 2.0;
+            };
+    
+            sum += calc_duration(self.context.tempo, next) * dotted;
+    
+            if !self.expect_char('&') {
+                break sum;
+            }
+        }
+    }
 }
 
 fn score(state: &mut State) -> Option<char> {
