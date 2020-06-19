@@ -56,6 +56,7 @@ export async function ready(token: string) {
 
     switch (command) {
       case 'play': {
+        await message.channel.send('生成しています…');
         const child = spawn(resolvePath(process.cwd(), 'composer/target/debug/dischord_rust'));
         await child.writeStdin(parameter);
         const [result, err] = await child.end();
