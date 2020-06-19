@@ -99,8 +99,11 @@ impl Track {
 
     fn fill_zero_until(&mut self, index: usize) {
         let length = self.track.len();
-
         if index >= length {
+            while index >= self.allocated {
+                self.reserve();
+            }
+    
             for _ in 0..(index - length + 1) {
                 self.track.push(0.0);
             }
@@ -108,10 +111,6 @@ impl Track {
     }
 
     fn add_value(&mut self, index: usize, value: f64) {
-        while index >= self.allocated {
-            self.reserve();
-        }
-
         self.track[index] += value;
     }
 }
