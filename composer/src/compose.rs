@@ -19,16 +19,16 @@ pub struct Context {
     pub position: f64,
     pub octave: i32,
     pub tempo: f64,
-    pub default_length: u32,
+    pub default_length: usize,
     pub volume: f64,
     pub tone: Wave,
     pub unison_detune: f64,
-    pub unison_count: u32,
+    pub unison_count: usize,
     pub envelope: Envelope,
 }
 
 impl Context {
-    pub fn new(sampling: u32) -> Self {
+    pub fn new(sampling: usize) -> Self {
         Context {
             track: Track::new(sampling),
             position: 0.0,
@@ -51,7 +51,7 @@ impl Context {
 
 pub struct StackItem {
     pub position: usize,
-    pub repeat_count: u32,
+    pub repeat_count: usize,
 }
 
 pub struct State<'a> {
@@ -63,7 +63,7 @@ pub struct State<'a> {
 }
 
 impl<'a> State<'a> {
-    pub fn new(input: &'a str, sampling: u32) -> Self {
+    pub fn new(input: &'a str, sampling: usize) -> Self {
         State {
             input,
             position: 0,
@@ -118,12 +118,12 @@ impl<'a> State<'a> {
         true
     }
     
-    pub fn unsigned_int(&mut self, default: u32) -> u32 {
-        let mut result: u32 = 0;
+    pub fn unsigned_int(&mut self, default: usize) -> usize {
+        let mut result: usize = 0;
         while !self.is_eof() {
             let current_char = self.take_char();
             if current_char >= '0' && current_char <= '9' {
-                result = result * 10 + (current_char as u8 - b'0') as u32;
+                result = result * 10 + (current_char as u8 - b'0') as usize;
                 self.position += 1;
             } else {
                 break;
@@ -137,7 +137,7 @@ impl<'a> State<'a> {
     }
 
     pub fn take_note_duration(&mut self) -> f64 {
-        fn calc_duration(tempo: f64, nth_semibreve: u32) -> f64 {
+        fn calc_duration(tempo: f64, nth_semibreve: usize) -> f64 {
             240.0 / tempo / nth_semibreve as f64
         };
     
@@ -187,7 +187,7 @@ fn score(state: &mut State) -> Option<char> {
     }
 }
 
-pub fn compose(input: &str, sampling: u32) {
+pub fn compose(input: &str, sampling: usize) {
     let mut state = State::new(input, sampling);
     let err = score(&mut state);
     if let Some(unexpected) = err {

@@ -1,4 +1,5 @@
 mod compose;
+mod filters;
 mod operators;
 mod track;
 mod waves;
@@ -6,7 +7,7 @@ mod waves;
 use crate::compose::compose;
 use std::io::{self, Read};
 
-static SAMPLING: u32 = 44100;
+static SAMPLING: usize = 44100;
 
 fn main() -> io::Result<()> {
     let mut args = std::env::args();

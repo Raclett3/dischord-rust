@@ -5,7 +5,7 @@ use std::vec::Vec;
 pub struct Track {
     track: Vec<f64>,
     allocated: usize,
-    sampling: u32,
+    sampling: usize,
 }
 
 pub struct Envelope {
@@ -16,7 +16,7 @@ pub struct Envelope {
 }
 
 impl Track {
-    pub fn new(sampling: u32) -> Self {
+    pub fn new(sampling: usize) -> Self {
         Track {
             track: vec![],
             allocated: 0,
@@ -25,19 +25,19 @@ impl Track {
     }
 
     pub fn print_as_riff(&self) -> io::Result<()> {
-        let length = (self.track.len() * 2) as u32;
+        let length = (self.track.len() * 2) as usize;
         print!("RIFF");
-        print_u32(length + 36)?;
+        print_usize(length + 36)?;
         print!("WAVEfmt ");
-        print_u32(16)?;
+        print_usize(16)?;
         print_u16(1)?;
         print_u16(1)?;
-        print_u32(self.sampling)?;
-        print_u32(self.sampling * 2)?;
+        print_usize(self.sampling)?;
+        print_usize(self.sampling * 2)?;
         print_u16(2)?;
         print_u16(16)?;
         print!("data");
-        print_u32(length)?;
+        print_usize(length)?;
         for sample in &self.track {
             let value = fit_number(-32767.0, *sample * 32767.0, 32767.0) as i16;
             print_i16(value)?;
@@ -139,7 +139,7 @@ fn print_u16(value: u16) -> io::Result<()> {
     Ok(())
 }
 
-fn print_u32(value: u32) -> io::Result<()> {
+fn print_usize(value: usize) -> io::Result<()> {
     for i in 0..4 {
         let byte = ((value >> (8 * i)) & 0xFF) as u8;
         io::stdout().write_all(&[byte])?;
