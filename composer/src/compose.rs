@@ -28,9 +28,9 @@ pub struct Context {
 }
 
 impl Context {
-    pub fn new() -> Self {
+    pub fn new(sampling: u32) -> Self {
         Context {
-            track: Track::new(44100),
+            track: Track::new(sampling),
             position: 0.0,
             octave: 0,
             tempo: 120.0,
@@ -63,12 +63,12 @@ pub struct State<'a> {
 }
 
 impl<'a> State<'a> {
-    pub fn new(input: &'a str) -> Self {
+    pub fn new(input: &'a str, sampling: u32) -> Self {
         State {
             input,
             position: 0,
             transaction_begin: None,
-            context: Context::new(),
+            context: Context::new(sampling),
             repeat_stack: Vec::new(),
         }
     }
@@ -187,8 +187,8 @@ fn score(state: &mut State) -> Option<char> {
     }
 }
 
-pub fn compose(input: &str) {
-    let mut state = State::new(input);
+pub fn compose(input: &str, sampling: u32) {
+    let mut state = State::new(input, sampling);
     let err = score(&mut state);
     if let Some(unexpected) = err {
         eprintln!("Unexpected token: {}", unexpected);
