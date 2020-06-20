@@ -136,6 +136,19 @@ impl<'a> State<'a> {
         }
     }
 
+    pub fn unsigned_int_vec(&mut self) -> Vec<usize> {
+        let mut values = Vec::new();
+        loop {
+            values.push(self.unsigned_int(0));
+    
+            let current_char = self.take_char();
+            if current_char != ',' {
+                break values;
+            }
+            self.position += 1;
+        }
+    }
+
     pub fn take_note_duration(&mut self) -> f64 {
         fn calc_duration(tempo: f64, nth_semibreve: usize) -> f64 {
             240.0 / tempo / nth_semibreve as f64
