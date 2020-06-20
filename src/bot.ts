@@ -2,6 +2,7 @@ import Discord from 'discord.js';
 import { resolve as resolvePath } from 'path';
 
 import { spawn } from './async-process';
+import { playBufferOnChannel } from './play-queue';
 
 type MessageListener = (client: Discord.Client, message: Discord.Message) => unknown;
 
@@ -18,6 +19,7 @@ const help = `
   Dischord
   ${prefix}help Dischordのヘルプを表示
   ${prefix}play [MML] MMLを音声ファイルに書き出し
+  ${prefix}vcplay [MML] MMLから音声を出力し、VCで再生
   Dischord MML 文法
   以下の文字列を連ねて記述します。小文字のアルファベット部分はパラメータとして整数を入れます。
   CDEFGABRn ドレミファソラシと休符に対応しています。数字を後ろにつけるとn分音符を表現します。
@@ -65,6 +67,29 @@ export async function ready(token: string) {
           await message.channel.send(err.toString('utf-8'));
         } else {
           await message.channel.send('', { files: [{ name: 'result.wav', attachment: result }] });
+        }
+        break;
+      }
+
+      case 'vcplay': {
+        await message.channel.send('生成しています…');
+        const child = spawn(resolvePath(process.cwd(), 'composer/target/debug/dischord_rust'), ['96000']);
+        await child.writeStdin(parameter);
+        const [result, err] = await child.end();
+
+        if (err.length) {
+          await message.channel.send(err.toString('utf-8'));
+        } else {
+          if (!message.member) {
+            message.channel.send('予期せぬエラーが発生しました。');
+            break;
+          }
+
+          if (!message.member.voice.channel) {
+            message.channel.send('あなたはVCに参加していません。');
+            break;
+          }
+          playBufferOnChannel(message.member.voice.channel, result.slice(44));
         }
         break;
       }
